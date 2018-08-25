@@ -25,7 +25,7 @@ class RouterStore {
     if (oldRoute === null || route === null) {
       this[routePath] = route;
       if (route !== null) {
-	this[routePath].params = observable.map(route.params);
+	      this[routePath].params = observable.map(route.params);
       }
     } else {
       oldRoute.name = route.name;
@@ -34,6 +34,18 @@ class RouterStore {
          oldRoute.params.set(key, route.params[key])
       }
     }
+  }
+  routePath (route) => {
+    // If browser plugin is active
+    if (this.router.buildUrl) {
+      return this.router.buildUrl(route.name, route.params);
+    }
+    return this.router.buildPath(route.name, route.params);
+  }
+  @computed path () {
+    /* compute the current path of the *current* 'route'
+    The same may be useful for transitionRoute and/or previousRoute */
+    return this.routePath(this.route);
   }
 
   //  ===========
