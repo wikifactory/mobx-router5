@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import {observable, action, computed} from 'mobx';
 import transitionPath from 'router5.transition-path';
 
 class RouterStore {
@@ -35,14 +35,14 @@ class RouterStore {
       }
     }
   }
-  routePath (route) => {
+  routePath = (route) => {
     // If browser plugin is active
     if (this.router.buildUrl) {
-      return this.router.buildUrl(route.name, route.params);
+      return this.router.buildUrl(route.name, route.params.toJS());
     }
-    return this.router.buildPath(route.name, route.params);
+    return this.router.buildPath(route.name, route.params.toJS());
   }
-  @computed path () {
+  @computed get path () {
     /* compute the current path of the *current* 'route'
     The same may be useful for transitionRoute and/or previousRoute */
     return this.routePath(this.route);
