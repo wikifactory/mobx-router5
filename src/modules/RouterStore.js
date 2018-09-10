@@ -30,7 +30,7 @@ class RouterStore {
     } else {
       oldRoute.name = route.name;
       // better to only remove specific entries
-      for (let key of Object.keys(oldRoute.params)) {
+      for (let key of oldRoute.params.keys()) {
         if (route.params[key] === undefined) {
           oldRoute.params.delete(key);
         }
