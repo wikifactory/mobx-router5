@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.11.6",
-    "router5.transition-path": "^4.0.1"
+    "router5-transition-path": "5.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
@@ -65,24 +65,25 @@
     "chai": "^3.5.0",
     "commitizen": "2.9.6",
     "coveralls": "^2.11.14",
-    "cz-conventional-changelog": "2.0.0",
+    "cz-conventional-changelog": "2.1.0",
     "del": "^2.2.2",
     "eslint": "^3.19.0",
     "eslint-plugin-import": "^2.2.0",
     "istanbul": "^1.1.0-alpha.1",
-    "mobx": "^3.1.9",
+    "mobx": "^4.2.0",
     "mocha": "^3.1.2",
     "rollup": "0.41.6",
     "rollup-plugin-babel": "^2.7.1",
-    "router5": "~4.5.2",
-    "semantic-release": "^6.3.2",
-    "semantic-release-conventional-commits": "1.0.2",
+    "router5": "^6.1.2",
+    "semantic-release": "^15.1.7",
+    "semantic-release-conventional-commits": "^2.0.0",
     "sinon": "^2.0.0-pre.3",
-    "sinon-chai": "^2.9.0"
+    "sinon-chai": "^2.9.0",
+    "travis-deploy-once": "4.4.1"
   },
   "peerDependencies": {
-    "router5": "^4.0.0",
-    "mobx": "^3.1.0"
+    "router5": "^6.1.2",
+    "mobx": "^4.0.0"
   },
   "scripts": {
     "commit": "git-cz",
@@ -92,9 +93,10 @@
     "test:cover": "babel-node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --require ./test/utils/test-setup.js 'test/*.js'",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "build": "node tools/build",
-    "publish:docs": "easystatic deploy docs --repo kriasoft/babel-starter-kit",
+    "publish:docs": "easystatic deploy docs --repo LeonardoGentile/mobx-router5",
     "start": "easystatic start docs",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release",
+    "travis-deploy-once": "travis-deploy-once"
   },
   "config": {
     "commitizen": {
@@ -104,8 +106,18 @@
   "release": {
     "analyzeCommits": {
       "path": "semantic-release-conventional-commits",
-      "minorTypes": ["feat", "minor"],
-      "patchTypes": ["fix", "patch", "docs", "refactor", "style", "perf"]
+      "minorTypes": [
+        "feat",
+        "minor"
+      ],
+      "patchTypes": [
+        "fix",
+        "patch",
+        "docs",
+        "refactor",
+        "style",
+        "perf"
+      ]
     }
   }
 }

@@ -6,13 +6,13 @@
 
 # mobx-router5
 
-> [Router5](http://router5.github.io/) integration with [mobx](https://mobx.js.org/). If you develop with React, use this package with __[react-mobx-router5](https://github.com/LeonardoGentile/react-mobx-router5)__. This plugin represents the source of truth for the @observer components exposed by react-mobx-router5.  
+> [Router5](https://router5.js.org/) integration with [mobx](https://mobx.js.org/). If you develop with React, use this package with __[react-mobx-router5](https://github.com/LeonardoGentile/react-mobx-router5)__. This plugin represents the source of truth for the @observer components exposed by react-mobx-router5.  
 This plugin can also be used standalone together with mobx. 
 
 ## Requirements
 
-- __router5 >= 4.0.0__
-- __mobx >= 3.1.0__
+- __router5 >= 6.1.2__
+- __mobx >= 4.0.0__
  
 These are considered `peerDependencies` that means they should exist in your installation, you should install them yourself to make this plugin work. The package won't install them as dependencies. 
 
@@ -24,14 +24,20 @@ npm install mobx-router5
 
 
 ## How it works
-Whenever your performs a router5's transition from one state to another and that transition is *started*, *canceled*, it's *successful* or it has a transition *error* this plugin exposes all this info as [mobx observables](https://mobx.js.org/refguide/observable.html) as properties of the `RouterStore` class. You can then use the mobx API to **observe** and react to these **observables**:
+Before using this plugin it is necessary that you understand how [router5 works](http://router5.github.io/docs/understanding-router5.html).  
+
+Whenever you performs a router5's transition from one state to another and that transition is *started*, *canceled*, it's *successful* or it has a transition *error* 
+this plugin exposes all this info as [mobx observables references](https://mobx.js.org/refguide/observable.html) properties of the `RouterStore` class.   
+You can then use the mobx API to **observe** and react to these **observables**:
 
 ```javascript
-@observable route // the current route
-@observable previousRoute
-@observable transitionRoute
-@observable transitionError
-@observable intersectionNode
+@observable.ref route; // Current Route - Object  
+@observable.ref previousRoute; // Object
+@observable.ref transitionRoute; // Object
+@observable.ref transitionError; // Object
+@observable.ref intersectionNode; // String
+@observable.ref canActivate; // Array
+@observable.ref canDeactivate; // Array
 
 ```
 
@@ -76,23 +82,23 @@ By default you can just import the class `RouterStore`, create a new instance, p
 
 
 ### Actions
-On router transition Start/Success/Cancel/Error the mobxPlugin invokes automatically these mobx actions exposed by the `RouterStore`:
+On route transition Start/Success/Cancel/Error the *mobxPlugin* invokes automatically these mobx actions exposed by the `RouterStore`:
 
 - `onTransitionStart(toState, fromState)`
+	- set the `transitionRoute`
+	- clear the `transitionError` 
 - `onTransitionSuccess(toState, fromState, opts)`
-  - also calls the `clearErrors()` action 
+	- set the `route`, `previousRoute`, `canActivate`, `canDeactivate` and `interserctionNode`
+	- also calls the `clearErrors()` action 
 - `onTransitionCancel(toState, fromState)` 
+	- reset the `transitionRoute`
 - `onTransitionError(toState, fromState, err)`
+	- set the `transitionRoute`, `previousRoute` and `transitionError` 
 
-This ensures that these observables within the store are always up-to-date with the current state:
 
-- @observable route 
-- @observable previousRoute
-- @observable transitionRoute
-- @observable transitionError
-- @observable intersectionNode
-
-Normally it's not necessary to *manually* call the store's actions, the plugin will do it for us. The only one probably worth calling manually (only when necessary) is `clearErrors()`.
+Normally it's **not necessary** to *manually* call these actions, the plugin will do it for us.   
+  
+The only one probably worth calling manually (only when necessary) is `clearErrors()`: it resets the `transitionRoute` and `transitionError`.
 
 ### Router instance reference inside the store
 
@@ -122,6 +128,9 @@ This creates indeed a cross referece, that is, the store has a reference of the 
 ### Your own store
 If you know what you are doing you can subclass or create yor own store, making sure you implement at least the actions listed above and a `setRouter(router)` method.
 
+### Contributing
+Please refer to the CONTRIBUTING.md file.  
+Please notice that this would require node >=8 as some dev packages require it (for example semantic-release) 
 
 ## Acknowledgments
 

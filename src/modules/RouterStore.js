@@ -1,19 +1,22 @@
 import {observable, action, computed} from 'mobx';
-import transitionPath from 'router5.transition-path';
+import transitionPath, {shouldUpdateNode} from 'router5-transition-path';
 
 class RouterStore {
 
-  @observable route = null;
-  @observable previousRoute = null;
-  @observable transitionRoute = null;
-  @observable transitionError = null;
-  @observable intersectionNode = '';
+  @observable.ref route = null;
+  @observable.ref previousRoute = null;
+  @observable.ref transitionRoute = null;
+  @observable.ref transitionError = null;
+  @observable.ref intersectionNode = '';
+  @observable.ref toActivate = [];
+  @observable.ref toDeactivate = [];
   // @observable currentView;
 
   router = null;
 
   constructor() {
     this.navigate = this.navigate.bind(this);
+    this.shouldUpdateNodeFactory = this.shouldUpdateNodeFactory.bind(this);
   }
 
   setRouter(router) {
@@ -40,6 +43,9 @@ class RouterStore {
       }
     }
   }
+  resetRoute(routeType) {
+    this[routeType] = null;
+  }
   routePath = (route) => {
     // If browser plugin is active
     if (this.router.buildUrl) {
@@ -65,15 +71,17 @@ class RouterStore {
   @action onTransitionSuccess = (route, previousRoute, opts) => {
     this.updateRoute('route', route);
     this.updateRoute('previousRoute', previousRoute);
-    if (route && !opts.reload) {
-      const { intersection } = transitionPath(route, previousRoute);
-      this.intersectionNode = intersection;
+    if (route) {
+      const {intersection, toActivate, toDeactivate} = transitionPath(route, previousRoute);
+      this.intersectionNode = opts.reload ? '' : intersection;
+      this.toActivate = toActivate;
+      this.toDeactivate = toDeactivate;
     }
     this.clearErrors();
   };
 
   @action onTransitionCancel = (route, previousRoute) => {
-    this.transitionRoute = '';
+    this.resetRoute('transitionRoute');
   };
 
   @action onTransitionError = (route, previousRoute, transitionError) => {
@@ -84,7 +92,7 @@ class RouterStore {
 
   // These can be called manually
   @action clearErrors = () => {
-    this.transitionRoute = null;
+    this.resetRoute('transitionRoute');
     this.transitionError = null;
   };
 
@@ -96,6 +104,14 @@ class RouterStore {
   navigate = (name, params, opts) => {
     this.router.navigate(name, params, opts);
   };
+
+  // Utility to calculate which react routeNode should update
+  shouldUpdateNodeFactory = (nodeName) => {
+    return computed(() => {
+      return shouldUpdateNode(nodeName)(this.route, this.previousRoute);
+    });
+  };
+
 
 }
 
